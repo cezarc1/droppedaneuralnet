@@ -8,7 +8,7 @@ Recovers the correct ordering of 97 shuffled linear layers from a
 Pipeline:
   1. Classify pieces by shape into inp (96×48), out (48×96), last (1×48)
   2. Pair inp/out via diagonal dominance ratio + Hungarian algorithm
-  3. Seed block ordering by ||W_out||_F
+  3. Seed block ordering by ||W_out||_1
   4. Hill-climb (bubble sort) to minimize MSE
 
 Usage:
@@ -157,17 +157,16 @@ def pair_blocks(pieces, inp_pieces, out_pieces):
     return paired, matched_ratios
 
 
-# ── Step 2: Seed ordering by ||W_out||_F ─────────────────────────────────
+# ── Step 2: Seed ordering by ||W_out||_1 ─────────────────────────────────
 
 def seed_order(paired, pieces):
     """
-    Sort blocks by the Frobenius norm of their output weight. In ResNets,
-    earlier blocks tend to make smaller perturbations, providing a rough
-    depth proxy.
+    Sort blocks by the L1 norm of their output weight. In ResNets, earlier
+    blocks tend to make smaller perturbations, providing a rough depth proxy.
     """
     decorated = []
     for idx, (inp_idx, out_idx) in enumerate(paired):
-        norm = pieces[out_idx]['weight'].norm().item()
+        norm = pieces[out_idx]['weight'].abs().sum().item()
         decorated.append((norm, idx))
     decorated.sort()
     return [paired[i] for _, i in decorated]
@@ -259,7 +258,7 @@ def main():
 
     # ── Step 2 ──
     print(f"\n{'─' * 70}")
-    print("Step 2: Seed initial order by ||W_out||_F")
+    print("Step 2: Seed initial order by ||W_out||_1")
     print(f"{'─' * 70}")
     ordered = seed_order(paired, pieces)
     X_sub, y_sub = X[:1000], y_pred[:1000]

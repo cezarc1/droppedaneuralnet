@@ -22,7 +22,7 @@ for all 48×48 candidate pairings, then solve a maximum-weight bipartite matchin
 
 ### Step 2 — Seed ordering (weight-only, instant)
 
-Sort blocks by $\|W_{out}\|_F$ (Frobenius norm of the output weight). Earlier blocks in a ResNet tend to make smaller perturbations, providing a rough depth proxy.
+Sort blocks by $\|W_{out}\|_1$ (L1 norm of the output weight). Earlier blocks in a ResNet tend to make smaller perturbations, providing a rough depth proxy.
 
 ### Step 3 — Hill-climb (~20s)
 
@@ -51,13 +51,12 @@ Step 1: Pair layers via diagonal dominance + Hungarian algorithm
   Time: 0.05s
   Matched ratios: min=1.764, max=3.232, mean=2.785
 
-Step 2: Seed initial order by ||W_out||_F
-  Seed MSE (N=1000): 0.075716
+Step 2: Seed initial order by ||W_out||_1
+  Seed MSE (N=1000): 0.081558
 
 Step 3: Hill-climb (bubble sort + gap swaps)
-    Round  1:  52 swaps, MSE = 0.0021263792
-    Round  2:  15 swaps, MSE = 0.0003789639
-    Round  3:   5 swaps, MSE = 0.0000000000
+    Round  1:  44 swaps, MSE = 0.0004183060
+    Round  2:   6 swaps, MSE = 0.0000000000
     Converged.
 
   RESULT
